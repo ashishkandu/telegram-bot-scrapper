@@ -4,4 +4,7 @@ __pycache__
 
 *.env
 *.log
-*.json
+
+# output files
+data.json
+info.json

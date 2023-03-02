@@ -9,10 +9,12 @@ from telegram import (
 )
 from telegram.ext import ContextTypes
 
-from functions import handle_response, get_token_links, is_valid_token, update_token, search_in_plex, fetch_series, extract_links_from_response
+from functions import get_token_links, is_valid_token, update_token, search_in_plex, fetch_series, extract_links_from_response
 from requests.utils import requote_uri
 from logging_module import logger
 import json
+
+from chat_bot import get_response, random_response
 
 from browser import Browser
 
@@ -59,14 +61,17 @@ async def talk(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_type = update.message.chat.type # gets the message from telegram in presence of bot
     text = str(update.message.text).lower()
     user_name = update.message.from_user.first_name
+    if 'hi' in text or 'hello' in text or 'hey' in text:
+        await update.message.reply_text(text=f'Hello {user_name}, nice to meet you!')
+        return
 
     if '@mysumu_bot' in text:
         logger.info(f'User ({update.message.chat_id}) says "{text}" in {message_type}')
         new_text = text.replace('@mysumu_bot', '').strip()
-        await update.message.reply_text(text=handle_response(new_text, user_name))
+        await update.message.reply_text(text=get_response(new_text))
     if message_type == 'private':
         logger.info(f'User ({update.message.chat_id}) says "{text}" in {message_type}')
-        await update.message.reply_text(text=handle_response(text, user_name))
+        await update.message.reply_text(text=get_response(text))
 
 
 # Test function is to caps the message passed as /caps ashish

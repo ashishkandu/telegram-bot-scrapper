@@ -1,0 +1,152 @@
+[
+    {
+      "response_type": "greeting",
+      "user_input": ["hello", "hi", "hey", "haya"],
+      "bot_response": "Hey there!",
+      "required_words": []
+    },
+    {
+      "response_type": "greeting",
+      "user_input": ["see you", "goodbye", "bye"],
+      "bot_response": "See you later!",
+      "required_words": []
+    },
+    {
+      "response_type": "greeting",
+      "user_input": ["nice", "to", "meet", "you"],
+      "bot_response": "The pleasure is all mine!",
+      "required_words": ["nice", "meet", "you"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["how", "to", "learn", "code", "coding", "apps"],
+      "bot_response": "Start by typing: 'How to learn coding' on Google.",
+      "required_words": ["learn", "code"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["where", "is", "ashish"],
+      "bot_response": "I find difficult to locate him :)",
+      "required_words": ["ashish", "where", "is"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["what", "is", "ashish", "he", "doing"],
+      "bot_response": "Ashish should be away, as you're talking to me ;)",
+      "required_words": ["ashish", "where", "is"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["how", "are", "you"],
+      "bot_response": "I'm great! Thanks for asking.",
+      "required_words": ["how", "are", "you"]
+    },
+    {
+    "response_type": "question",
+    "user_input": ["what", "do", "you", "purpose"],
+    "bot_response": "I was created to help my developer get the links from his script to watch series",
+    "required_words": ["what", "do", "you"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["how", "i", "can", "get", "links", "series", "watch"],
+      "bot_response": "You can start a command by typing /search [keyword] where keyword is the series name",
+      "required_words": ["how", "can", "i"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["how", "can", "you", "help", "me"],
+      "bot_response": "You can start a command by typing /search [keyword] where keyword is the series name",
+      "required_words": ["how", "you", "me"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["what", "is", "your", "name"],
+      "bot_response": "My name is Sumu",
+      "required_words": ["your", "name"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["what", "do", "you", "like", "hobby"],
+      "bot_response": "Sending series links to you, it serves my purpose :)",
+      "required_words": ["what", "do", "like"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["bby"],
+      "bot_response": "I'm not the correct recipient for this message (blush)",
+      "required_words": ["what", "do", "like"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["what", "you", "doing"],
+      "bot_response": "Waiting for you to send me some commnads, how about /search",
+      "required_words": ["what", "you", "doing"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["did", "you", "have", "launch", "dinner", "breakfast"],
+      "bot_response": "I'm always feeding from internet",
+      "required_words": ["did", "you", "have", "your"]
+    },
+    {
+      "response_type": "question",
+      "user_input": ["do", "you", "eat"],
+      "bot_response": "sometimes",
+      "required_words": ["do", "you", "eat"]
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["ok", "okay", "gottcha", "k"],
+      "bot_response": "Thank you :)",
+      "required_words": []
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["i", "love", "you"],
+      "bot_response": "Aww, thanks",
+      "required_words": ["love", "you"]
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["do", "love", "you", "me"],
+      "bot_response": "Sorry, I'm too busy for romance. I can serve series links to you",
+      "required_words": ["love", "me"]
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["thank", "thanks", "thx"],
+      "bot_response": "No problem",
+      "required_words": []
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["good", "nice", "great", "cool", "yes"],
+      "bot_response": ":)",
+      "required_words": []
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["no", "nothing", "forget"],
+      "bot_response": "Ok sorry",
+      "required_words": []
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["no", "problem", "issue"],
+      "bot_response": "Okay",
+      "required_words": ["no"]
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["haha", "hehe", "funny", "lol"],
+      "bot_response": ":D",
+      "required_words": []
+    },
+    {
+      "response_type": "conversation",
+      "user_input": ["bro"],
+      "bot_response": "Do not call me bro, plz",
+      "required_words": ["bro"]
+    }
+  ]

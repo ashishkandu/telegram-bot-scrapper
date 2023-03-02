@@ -8,46 +8,6 @@ smily_emoji = "\U0001f642"
 shushing_emoji = "\U0001F92B"
 
 
-def handle_response(text: str, username: str) -> str:
-    if 'hi' in text or 'hello' in text:
-        return f'Hello {username}, nice to meet you!'
-    
-    if 'how are you' in text:
-        return 'I\'m good, thanks'
-    
-    if 'bby' in text or 'ashish' in text:
-        return 'Ashish is working on me, I\'m getting better at this ' + smily_emoji
-    
-    if 'bye' in text:
-        return 'Bye! Have a nice day..'
-    
-    if 'love you' in text:
-        return 'Aww, thanks'
-    
-    if 'who created you' in text:
-        return 'I was created by Ashish Kandu'
-    
-    if 'what do you do' in text or 'what is your purpose' in text or 'purpose' in text:
-        return 'I was created to help my developer get the links from his script to watch series'
-    
-    if text == 'ok' or text == 'okay':
-        return smily_emoji
-    
-    if '?' == text:
-        return 'hmmm..'
-
-    if 'what is he doing' in text:
-        return 'Ashish is missing you' + shushing_emoji
-    
-    if 'call' in text:
-        return 'I\'ll try to let him know on this'
-    
-    if 'do you love me' in text:
-        return 'Sorry, I\'m too busy for your romance'
-    
-    return 'I don\'t understand that, could you please rephrase it?'
-
-
 def get_token_links(tokenless_links: list, session: Browser) -> list:
     return [link+session.headers['Authorization'].replace('Bearer ', '') for link in tokenless_links]
 
