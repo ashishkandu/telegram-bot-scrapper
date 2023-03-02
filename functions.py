@@ -45,7 +45,7 @@ def handle_response(text: str, username: str) -> str:
     if 'do you love me' in text:
         return 'Sorry, I\'m too busy for your romance'
     
-    return 'I don\'t understand that yet, I need to ask Ashish on this ' + shushing_emoji
+    return 'I don\'t understand that, could you please rephrase it?'
 
 
 def get_token_links(tokenless_links: list, session: Browser) -> list:
