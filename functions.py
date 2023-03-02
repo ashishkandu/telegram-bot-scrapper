@@ -1,4 +1,3 @@
-from dotenv import get_key, set_key
 from variables import HOME_API, ENV_PATH, SEARCH_API, FETCH_TV_SERIES, DOWNLOAD_API
 from browser import Browser, Response
 from requests.utils import requote_uri
@@ -7,8 +6,6 @@ from logging_module import logger
 
 smily_emoji = "\U0001f642"
 shushing_emoji = "\U0001F92B"
-
-plex_token = get_key(ENV_PATH, 'PLEX_TOKEN')
 
 
 def handle_response(text: str, username: str) -> str:
@@ -51,43 +48,28 @@ def handle_response(text: str, username: str) -> str:
     return 'I don\'t understand that yet, I need to ask Ashish on this ' + shushing_emoji
 
 
-def get_token_links(tokenless_links: list) -> list:
-    return [link+plex_token for link in tokenless_links]
+def get_token_links(tokenless_links: list, session: Browser) -> list:
+    return [link+session.headers['Authorization'].lstrip('Bearer ') for link in tokenless_links]
 
 
-def add_bearer_to_token(token:str ) -> str:
-    return "Bearer " + token
-
-
-def is_valid_token(session: Browser) -> Response:   
-    session.inject_header({'Authorization': add_bearer_to_token(plex_token)})
+def is_valid_token(session: Browser) -> Response:
     return session.get(HOME_API) # Check the status of cached token
 
 
 def update_token(session: Browser) -> bool:
-    session.remove_header('Authorization')
-    username = get_key(ENV_PATH, 'USER_NAME')
-    password = get_key(ENV_PATH, 'PASSWORD')
-    response: Response = session.login(username, password)
+    response = session.get_new_token()
     if response.ok:
-        plex_token = response.json()['token']
-        set_key(ENV_PATH, 'PLEX_TOKEN', plex_token)
-        session.inject_header({'Authorization': add_bearer_to_token(plex_token)})
         return True
     logger.info(response.json())
     return False
 
     
 def search_in_plex(session: Browser, keyword: str) -> Response:
-    if not 'Authorization' in session.headers:
-        session.inject_header({'Authorization': add_bearer_to_token(plex_token)})
     prepared_url: str = f'{SEARCH_API}/{requote_uri(keyword)}'
     return session.get(prepared_url)
 
 
 def fetch_series(session: Browser, tv_id: str) -> Response:
-    if not 'Authorization' in session.headers:
-        session.inject_header({'Authorization': add_bearer_to_token(plex_token)})
     prepared_url: str = f'{FETCH_TV_SERIES}/{tv_id}'
     return session.get(prepared_url)
 

@@ -1,5 +1,6 @@
+from dotenv import get_key, set_key
 from requests import Session, Response
-from variables import LOGIN_API, DATA_FILE_NAME, INFO_FILE_NAME
+from variables import LOGIN_API, DATA_FILE_NAME, INFO_FILE_NAME, ENV_PATH
 import json
 
 
@@ -15,6 +16,7 @@ class Browser(Session):
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
             'sec-ch-ua-platform': '"Linux"',
         }
+       self.inject_header({'Authorization': 'Bearer ' + get_key(ENV_PATH, 'PLEX_TOKEN')})
 
        try:
         with open(DATA_FILE_NAME) as f:
@@ -37,6 +39,18 @@ class Browser(Session):
             'password': password
         }
         return self.post(LOGIN_API, json=payload)
+    
+    def get_new_token(self) -> Response:
+        self.remove_header('Authorization')
+        username = get_key(ENV_PATH, 'USER_NAME')
+        password = get_key(ENV_PATH, 'PASSWORD')
+        response: Response = self.login(username, password)
+        if response.ok:
+            plex_token = response.json()['token']
+            set_key(ENV_PATH, 'PLEX_TOKEN', plex_token)
+            self.inject_header({'Authorization': 'Bearer ' + plex_token})
+            print(plex_token)
+        return response
     
     
     def inject_header(self, data: dict) -> None:

@@ -32,7 +32,7 @@ async def inline_link_provider(update: Update, context: ContextTypes.DEFAULT_TYP
         return
     results = []
     try:
-        links = get_token_links(my_browser.cached_data[query])
+        links = get_token_links(my_browser.cached_data[query], my_browser)
     except KeyError:
         await context.bot.answer_inline_query(update.inline_query.id, [InlineQueryResultArticle(id=query, title=f'{my_browser.info_data["name"]} does not have season {query}', input_message_content=InputTextMessageContent('/info'))])
         return
@@ -94,7 +94,7 @@ async def get_all_links(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await update.message.reply_text(text=f'The {my_browser.info_data["name"]} does not have season {season_no}')
         return
     try:
-        links = get_token_links(my_browser.cached_data[season_no])
+        links = get_token_links(my_browser.cached_data[season_no], my_browser)
     except KeyError:
         await update.message.reply_text(text=f'{my_browser.info_data["name"]} does not have season {season_no}')
         return
@@ -124,6 +124,7 @@ async def get_token_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 async def renew(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Renews the token stored in the env file"""
+    # if my_browser.get_new_token():
     if update_token(my_browser):
         update_text="Token renewal complete!"
     else:
