@@ -51,7 +51,7 @@ async def inline_link_provider(update: Update, context: ContextTypes.DEFAULT_TYP
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(text="Hi, I'm Sumu!")
+    await update.message.reply_text(text="Hi, I'm Sumu! Ready to serve series links for you")
 
 # This function utilizes pre definded responses and talk to the user
 async def talk(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -197,4 +197,4 @@ async def info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(text="No information found")
         return
     message = f"{info_data['name']} - {(', '.join([data+'p' for data in info_data['quality']]))}\n\n{info_data['overview']}\n\nFirst air date: {info_data['first_air_date']}"
-    await update.message.reply_text(text=message)
+    await context.bot.send_photo(chat_id=update.effective_chat.id, photo=info_data['poster_path'], caption=message)

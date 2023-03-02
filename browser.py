@@ -67,6 +67,7 @@ class Browser(Session):
                     'overview': response.json()['overview'],
                     'first_air_date': response.json()['first_air_date'],
                     'quality': response.json()['quality'],
+                    'poster_path': response.json()['poster_path'],
                     }
             with open(INFO_FILE_NAME, 'w', encoding='utf-8') as f:
                 json.dump(
