@@ -51,25 +51,22 @@ async def inline_link_provider(update: Update, context: ContextTypes.DEFAULT_TYP
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(text="Hi, I'm Sumu! Ready to serve series links for you")
+    user = update.effective_user
+    await update.message.reply_html(text=f"Hi {user.mention_html()}, I'm Sumu! Ready to serve series links for you")
 
-# This function utilizes pre definded responses and talk to the user
 async def talk(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message_type = update.message.chat.type
+    """ This function utilizes pre definded responses and talk to the user """
+    message_type = update.message.chat.type # gets the message from telegram in presence of bot
     text = str(update.message.text).lower()
     user_name = update.message.from_user.first_name
-    response = ''
 
-    logger.info(f'User ({update.message.chat_id}) says "{text}" in {message_type}')
-
-    if message_type == 'group':
-        if '@mysumu_bot' in text:
-            new_text = text.replace('@mysumu_bot', '').strip()
-            response = handle_response(new_text, user_name)
-    else:
-        response = handle_response(text, user_name)
-
-    await update.message.reply_text(text=response)
+    if '@mysumu_bot' in text:
+        logger.info(f'User ({update.message.chat_id}) says "{text}" in {message_type}')
+        new_text = text.replace('@mysumu_bot', '').strip()
+        await update.message.reply_text(text=handle_response(new_text, user_name))
+    if message_type == 'private':
+        logger.info(f'User ({update.message.chat_id}) says "{text}" in {message_type}')
+        await update.message.reply_text(text=handle_response(text, user_name))
 
 
 # Test function is to caps the message passed as /caps ashish
