@@ -49,7 +49,7 @@ def handle_response(text: str, username: str) -> str:
 
 
 def get_token_links(tokenless_links: list, session: Browser) -> list:
-    return [link+session.headers['Authorization'].lstrip('Bearer ') for link in tokenless_links]
+    return [link+session.headers['Authorization'].replace('Bearer ', '') for link in tokenless_links]
 
 
 def is_valid_token(session: Browser) -> Response:
