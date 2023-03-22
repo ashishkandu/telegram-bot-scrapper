@@ -14,7 +14,7 @@ from requests.utils import requote_uri
 from logging_module import logger
 import json
 
-from chat_bot import get_response, random_response
+from chat_bot import get_response
 
 from browser import Browser
 

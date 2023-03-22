@@ -49,7 +49,6 @@ class Browser(Session):
             plex_token = response.json()['token']
             set_key(ENV_PATH, 'PLEX_TOKEN', plex_token)
             self.inject_header({'Authorization': 'Bearer ' + plex_token})
-            print(plex_token)
         return response
     
     
