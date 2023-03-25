@@ -9,7 +9,17 @@ from telegram import (
 )
 from telegram.ext import ContextTypes
 
-from functions import get_token_links, is_valid_token, update_token, search_in_plex, fetch_series, extract_links_from_response, fetch_movie, get_movie
+from functions import (
+    get_token_links, 
+    is_valid_token, 
+    update_token, 
+    search_in_plex, 
+    fetch_series, 
+    extract_links_from_response, 
+    fetch_movie, 
+    get_movie
+)
+
 from requests.utils import requote_uri
 from logging_module import logger
 import json
