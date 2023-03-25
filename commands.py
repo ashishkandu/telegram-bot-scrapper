@@ -9,7 +9,7 @@ from telegram import (
 )
 from telegram.ext import ContextTypes
 
-from functions import get_token_links, is_valid_token, update_token, search_in_plex, fetch_series, extract_links_from_response
+from functions import get_token_links, is_valid_token, update_token, search_in_plex, fetch_series, extract_links_from_response, fetch_movie, get_movie
 from requests.utils import requote_uri
 from logging_module import logger
 import json
@@ -142,6 +142,10 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     search_keyword = ' '.join(context.args)
     logger.info(f'{update.message.from_user.first_name} searched for {search_keyword}')
     response = search_in_plex(my_browser, search_keyword)
+    if response.status_code == 401:
+        response_message = "Token expired!" + ' \U0001F494'
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=response_message)
+        return
     if not response.ok:
         response_message = "Enter a keyword to search e.g,\n/search The big bang theory"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=response_message)
@@ -152,7 +156,10 @@ async def search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     search_results = []
     for search_item in response.json():
-        search_results.append([InlineKeyboardButton(search_item['title'], callback_data=search_item['id'])])
+        payload = search_item['id'] # Series
+        if not search_item.get('isTv'):
+            payload = search_item['id']*1000001 # Movie
+        search_results.append([InlineKeyboardButton(search_item['title'], callback_data=payload)])
     reply_markup = InlineKeyboardMarkup(search_results)
 
     await update.message.reply_text("Please choose:", reply_markup=reply_markup)
@@ -164,22 +171,34 @@ async def search_result_buttons(update: Update, context: ContextTypes.DEFAULT_TY
     # CallbackQueries need to be answered, even if no notification to the user is needed
     # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     await query.answer()
-    # selected = query.data
-    response = fetch_series(my_browser, query.data)
-    with open('temp.json', 'w') as f:
-        json.dump(response.json(), f, indent=2)
-    if response.ok:
-        if not my_browser.store_current_response(response):
-            await query.edit_message_text('unable to save info')
-            return
-        quality_available = []
-        for quality in response.json()['quality']:
-            quality_available.append([InlineKeyboardButton(quality+'p', callback_data=quality+'p')])
-        reply_markup = InlineKeyboardMarkup(quality_available)
-        await query.edit_message_text(text=f"{response.json()['name']}\n{response.json()['overview']}\n\nChoose quality: ", reply_markup=reply_markup)
-        # await context.bot.sendMessage(chat_id=update.effective_chat.id, text= 'hello', reply_markup=keyboard)
+    selected = int(query.data)
+    if selected % 1000001 == 0:
+        response = fetch_movie(my_browser, selected // 1000001)
+        if response.ok:
+            movie_data = get_movie(response)
+            await query.edit_message_text("Sending movie details")
+            link_message = ""
+            for link_data in movie_data['link_data']:
+                toknized_link = get_token_links((link_data['link'],), my_browser)[0]
+                link_message += f"\n\nQuality: <a href='{requote_uri(toknized_link)}'>{link_data['quality']}p</a>\nLanguage: {link_data['language']}\nSize: {link_data['size']}GB"
+            message = f"{movie_data['title']}\n\n{movie_data['overview']}\n\nRelease Date: {movie_data['release_date']}" + link_message
+            await context.bot.send_photo(chat_id=update.effective_chat.id, photo=movie_data['poster_path'], caption=message, parse_mode='HTML')
+
+
     else:
-        await query.edit_message_text('Series not found')
+        response = fetch_series(my_browser, selected)
+        if response.ok:
+            if not my_browser.store_current_response(response):
+                await query.edit_message_text('unable to save info')
+                return
+            quality_available = []
+            for quality in response.json()['quality']:
+                quality_available.append([InlineKeyboardButton(quality+'p', callback_data=quality+'p')])
+            reply_markup = InlineKeyboardMarkup(quality_available)
+            await query.edit_message_text(text=f"{response.json()['name']}\n{response.json()['overview']}\n\nChoose quality: ", reply_markup=reply_markup)
+            # await context.bot.sendMessage(chat_id=update.effective_chat.id, text= 'hello', reply_markup=keyboard)
+        else:
+            await query.edit_message_text('Series not found')
 
     
 async def extract_links(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
