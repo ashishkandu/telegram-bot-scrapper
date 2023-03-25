@@ -216,8 +216,8 @@ async def extract_links(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     await query.answer()
     if my_browser.get_current_response().status_code == None:
         return
-    data = extract_links_from_response(my_browser.get_current_response() , query.data)
-    if my_browser.store_data(data):
+    series_data = extract_links_from_response(my_browser.get_current_response() , query.data)
+    if my_browser.store_data(series_data):
         await query.edit_message_text(f"{my_browser.get_current_response().json()['name']} saved successfully!")
     else:
         await query.edit_message_text("Something went wrong while saving the data")
@@ -229,3 +229,56 @@ async def info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     message = f"{info_data['name']} - {(', '.join([data+'p' for data in info_data['quality']]))}\n\n{info_data['overview']}\n\nFirst air date: {info_data['first_air_date']}"
     await context.bot.send_photo(chat_id=update.effective_chat.id, photo=info_data['poster_path'], caption=message)
+
+
+async def watch(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.info(f'{update.message.from_user.first_name} started /watch')
+    await update.message.reply_text(f"You're watching {my_browser.info_data.get('name')}...")
+    
+    if not my_browser.cached_data: # Checks if cached data is empty
+        await update.message.reply_text(text="No cached data, search for a series")
+        return
+
+    response = is_valid_token(my_browser)
+    if not response.ok:
+        logger.info(response.text)
+        response_text = response.json()['message'] + ' \U0001F494'
+        await update.message.reply_text(text=response_text)
+        return
+
+    total_seasons = len(my_browser.cached_data)
+    season_buttons = []
+    for season in range(1, total_seasons+1, 1):
+        season_buttons.append([InlineKeyboardButton(f"Season {season}", callback_data=f"Season {season}")])
+    reply_markup = InlineKeyboardMarkup(season_buttons)
+    # await context.bot.edit_message_text(chat_id=update.message.chat_id, message_id=update.message.message_id, reply_markup=reply_markup, text="Please Choose:") 
+    await update.message.reply_text("Please choose:", reply_markup=reply_markup)
+
+
+async def season_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    selected = query.data
+    logger.info(f'{update.callback_query.from_user.first_name} selected {selected}')
+    
+    season_no = selected.split(" ")[-1]
+    episodes = my_browser.cached_data[season_no]
+    episode_buttons = []
+    for index, episode in enumerate(episodes):
+        episode_title = episode.split('?')[0].split('/')[-1]
+        if 'the big bang theory' in episode_title.lower():
+            episode_title = 'TBBT ' + episode_title[20:]
+        episode_buttons.append([InlineKeyboardButton(episode_title, callback_data=f"S{season_no}E{index}")])
+    reply_markup = InlineKeyboardMarkup(episode_buttons)
+
+    await query.edit_message_text("Please choose:", reply_markup=reply_markup)
+
+
+async def episode_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    await query.answer()
+    season, episode = query.data.lstrip('S').split('E')
+    episode_link = my_browser.cached_data[season][int(episode)]
+    toknized_link = get_token_links((episode_link,), my_browser)[0]
+    episode_title = episode_link.split('?')[0].split('/')[-1]
+    await query.edit_message_text(f'<a href="{requote_uri(toknized_link)}">{episode_title}</a>', parse_mode='HTML')

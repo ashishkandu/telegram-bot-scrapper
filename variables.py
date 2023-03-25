@@ -13,6 +13,5 @@ FETCH_MOVIE_API = "https://apis.googolplex.live/api/movies/getAll"
 log_file_name = "bot_logs.log"
 ENV_PATH = join(CURR_PATH, '.env')
 
-DEVELOPER_CHAT_ID = 757002673
 DATA_FILE_NAME = 'data.json'
 INFO_FILE_NAME = 'info.json'

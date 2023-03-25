@@ -15,12 +15,15 @@ from commands import (
     cancel,
     extract_links,
     info,
+    watch,
+    season_buttons,
+    episode_link,
 )
 from logging_module import logger
 import traceback
 import html
 import json
-from variables import DEVELOPER_CHAT_ID, ENV_PATH
+from variables import ENV_PATH
 from telegram.constants import ParseMode
 
     
@@ -48,7 +51,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
     # Finally, send the message
     await context.bot.send_message(
-        chat_id=DEVELOPER_CHAT_ID, text=message, parse_mode=ParseMode.HTML
+        chat_id=get_key(ENV_PATH, 'DEVELOPER_CHAT_ID'), text=message, parse_mode=ParseMode.HTML
     )
 
 
@@ -69,6 +72,7 @@ if __name__ == '__main__':
     application.add_handler(caps_handler)
     application.add_handler(links_handler)
     application.add_handler(CommandHandler('info', info))
+    application.add_handler(CommandHandler('watch', watch))
     
     # /verify token
     application.add_handler(CommandHandler('verify', get_token_status))
@@ -77,7 +81,8 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler('search', search))
     application.add_handler(CallbackQueryHandler(search_result_buttons, pattern='^(\d+)$'))
     application.add_handler(CallbackQueryHandler(extract_links, pattern='^(\d+)p$'))
-
+    application.add_handler(CallbackQueryHandler(season_buttons, pattern='^Season (\d+)$'))
+    application.add_handler(CallbackQueryHandler(episode_link, pattern='^S(\d+)E(\d+)$'))
     application.add_error_handler(error_handler)
 
     application.run_polling()
